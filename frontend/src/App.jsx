@@ -35,7 +35,7 @@ export default function YouTubeDownloader() {
       
       const proto_streams = await response.json()
       setDownloadLink('')
-      setFileStreams(proto_streams.fmt_streams)
+      setFileStreams(proto_streams)
       
     }
   }

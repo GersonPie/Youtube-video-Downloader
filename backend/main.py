@@ -15,7 +15,7 @@ origins = [
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,9 +33,9 @@ async def fetch_videos():
 
 @app.get("/fetch/")
 async def fetch_videos(url, format):
-    
     yt = YouTube(url)
-    return yt.streams.filter(file_extension=format)
+    data_to_send = yt.streams.filter(file_extension=format).fmt_streams
+    return data_to_send
 
 @app.get('/download/')
 async def download_video(url:str, index:int):
