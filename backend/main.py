@@ -34,13 +34,13 @@ async def fetch_videos():
 @app.get("/fetch/")
 async def fetch_videos(url, format):
     yt = YouTube(url)
-    data_to_send = yt.streams.filter(file_extension=format).fmt_streams
+    data_to_send = yt.streams.filter(file_extension=format, use_po_token=True).fmt_streams
     return data_to_send
 
 @app.get('/download/')
 async def download_video(url:str, index:int):
     
-    yt = YouTube(url,use_oauth=False,allow_oauth_cache=True)
+    yt = YouTube(url, use_po_token=True)
     audio_stream = yt.streams.filter(only_audio=True).first()
     if yt:
         yt.streams[index].download(filename='video.mp4')
