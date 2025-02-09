@@ -26,6 +26,10 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IMAGE_PATH = os.path.join(BASE_DIR, "picture.jpg")
 print(IMAGE_PATH)
+@app.get("/")
+async def fetch_videos():
+    return {'msg': 'hello world'}
+
 @app.get("/fetch/")
 async def fetch_videos(url, format):
     
@@ -53,4 +57,4 @@ def download_file():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
