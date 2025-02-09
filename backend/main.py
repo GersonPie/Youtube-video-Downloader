@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Query
-from fastapi.responses import FileResponse
-import yt_dlp
+from pytubefix import YouTube
 import os
-
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-app = FastAPI()
 
+app = FastAPI()
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
@@ -13,7 +12,6 @@ origins = [
     "http://localhost:5173",
     
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -21,30 +19,38 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+#Globlas
 
 DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)  
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGE_PATH = os.path.join(BASE_DIR, "picture.jpg")
+print(IMAGE_PATH)
+@app.get("/fetch/")
+async def fetch_videos(url, format):
+    
+    yt = YouTube(url)
+    return yt.streams.filter(file_extension=format)
 
-@app.get("/download/")
-async def download_video(url: str, format: str = Query("video")):
-    try:
-        
-        ydl_opts = {
-            'format': 'bestaudio/best' if format == "audio" else 'best',
-            'outtmpl': f"{DOWNLOAD_FOLDER}/%(title)s.%(ext)s"
-        }
-        
-        
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            filename = ydl.prepare_filename(info)
+@app.get('/download/')
+async def download_video(url:str, index:int):
+    
+    yt = YouTube(url,use_oauth=False,allow_oauth_cache=True)
+    audio_stream = yt.streams.filter(only_audio=True).first()
+    if yt:
+        yt.streams[index].download(filename='video.mp4')
+    if audio_stream:
+        audio_stream.download(filename='audio.mp3')
+    os.system('ffmpeg -i video.mp4 -i audio.mp3 -c:v copy -c:a aac video_converted.mp4')
+    
+    
+    return FileResponse(os.path.join(BASE_DIR, 'video_converted.mp4'), filename='video_converted.mp4') 
 
-            
-            if format == "audio":
-                filename = filename.rsplit(".", 1)[0] + ".mp3"
+@app.get('/getfile')
+def download_file():
+    return FileResponse(IMAGE_PATH, filename='picture.jpg')
 
-        
-        return FileResponse(filename, media_type="application/octet-stream", filename=os.path.basename(filename))
 
-    except Exception as e:
-        return {"error": str(e)}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
