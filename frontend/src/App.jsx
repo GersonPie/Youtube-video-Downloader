@@ -14,7 +14,7 @@ export default function YouTubeDownloader() {
   }, [fileStreams])
 
   const Convert_and_Download = async ()=>{
-    const response = await fetch(`http://127.0.0.1:8000/download/?url=${url}&index=${index}`)
+    const response = await fetch(`https://youtube-video-downloader-a6ha.onrender.com/download/?url=${url}&index=${index}`)
     console.log(response)
     var parsed_response = window.URL.createObjectURL(await response.blob())
     setDownloadLink(parsed_response)
@@ -27,7 +27,7 @@ export default function YouTubeDownloader() {
       return;
     }
 
-    const response = await fetch(`http://127.0.0.1:8000/fetch/?url=${url}&format=${format}`)
+    const response = await fetch(`https://youtube-video-downloader-a6ha.onrender.com/fetch/?url=${url}&format=${format}`)
     if(!response.ok){
       throw 'response from API is not ok'
     }
