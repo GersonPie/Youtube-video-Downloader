@@ -1,7 +1,7 @@
 from pytubefix import YouTube
 import os
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -10,6 +10,7 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:5173",
+    "https://cxtube.vercel.app/",
     
 ]
 app.add_middleware(
